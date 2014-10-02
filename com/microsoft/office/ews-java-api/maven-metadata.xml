@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.microsoft.office</groupId>
+  <artifactId>ews-java-api</artifactId>
+  <versioning>
+    <versions>
+      <version>1.3-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20141002145743</lastUpdated>
+  </versioning>
+</metadata>
