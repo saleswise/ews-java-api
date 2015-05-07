@@ -23,6 +23,7 @@
 
 package microsoft.exchange.webservices.data.core.request;
 
+import microsoft.exchange.webservices.data.exception.ReturnXmlException;
 import microsoft.exchange.webservices.data.misc.AsyncCallback;
 import microsoft.exchange.webservices.data.misc.AsyncExecutor;
 import microsoft.exchange.webservices.data.misc.AsyncRequestResult;
@@ -67,6 +68,8 @@ public abstract class SimpleServiceRequestBase<T> extends ServiceRequestBase<T> 
     try {
       response = this.validateAndEmitRequest();
       return this.readResponse(response);
+    } catch (ReturnXmlException e) {
+      throw e;
     } catch (IOException ex) {
       // Wrap exception.
       throw new ServiceRequestException(String.
