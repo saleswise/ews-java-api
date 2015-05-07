@@ -50,7 +50,6 @@ import microsoft.exchange.webservices.data.exception.ReturnXmlException;
 import microsoft.exchange.webservices.data.misc.SoapFaultDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.io.IOUtils;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.http.HTTPException;
@@ -400,6 +399,40 @@ public abstract class ServiceRequestBase<T> {
   }
 
   /**
+   * Reads the response stream.
+   *
+   * @return serviceResponse
+   * @throws Exception
+   */
+  protected InputStream readResponseStream(HttpWebRequest response) throws Exception {
+    T serviceResponse;
+
+    if (!response.getResponseContentType().startsWith("text/xml")) {
+      String line = new BufferedReader(new InputStreamReader(ServiceRequestBase.getResponseStream(response)))
+          .readLine();
+      throw new ServiceRequestException("The response received from the service didn't contain valid XML.");
+    }
+
+    /**
+     * If tracing is enabled, we read the entire response into a
+     * MemoryStream so that we can pass it along to the ITraceListener. Then
+     * we parse the response from the MemoryStream.
+     */
+    try {
+      this.getService().processHttpResponseHeaders(TraceFlags.EwsResponseHttpHeaders, response);
+      return ServiceRequestBase.getResponseStream(response);
+    } catch (HTTPException e) {
+      if (e.getMessage() != null) {
+        this.getService().processHttpResponseHeaders(
+            TraceFlags.EwsResponseHttpHeaders, response);
+      }
+      throw new ServiceRequestException(String.format("The request failed. %s", e.getMessage()), e);
+    } catch (IOException e) {
+      throw new ServiceRequestException(String.format("The request failed. %s", e.getMessage()), e);
+    }
+  }
+
+  /**
    * Reads the response.
    *
    * @return serviceResponse
@@ -421,12 +454,9 @@ public abstract class ServiceRequestBase<T> {
      */
 
     try {
-      this.getService().processHttpResponseHeaders(TraceFlags.EwsResponseHttpHeaders, response);
-
-      // Tracing was causing a slowdown, short cirtuited this.
-      if (false && this.getService().isTraceEnabledFor(TraceFlags.EwsResponse)) {
+      if (this.getService().isTraceEnabledFor(TraceFlags.EwsResponse)) {
         ByteArrayOutputStream memoryStream = new ByteArrayOutputStream();
-        InputStream serviceResponseStream = ServiceRequestBase.getResponseStream(response);
+        InputStream serviceResponseStream = readResponseStream(response);
 
         int data = serviceResponseStream.read();
         while (data != -1) {
@@ -441,25 +471,7 @@ public abstract class ServiceRequestBase<T> {
         serviceResponseStream.close();
         memoryStream.flush();
       } else {
-        InputStream responseStream = ServiceRequestBase.getResponseStream(response);
-        if(hijackResponse) {
-          // We are going to parse the response from a string into json on the
-          // exchange-connector side.
-
-          // Ambiguous method if we don't make encoding a separate string.
-          // Null encoding means system default.
-          // TODO(jms): Figure out what encoding is needed, so that this does not one day blowup.
-          String encoding = null;
-          String xml = IOUtils.toString(responseStream, encoding);
-          System.out.println(xml);
-
-          // Throwing an exception here since we just want the plain XML of the response, and there
-          // is no other easy way to get back the data we want.
-          // The xml is the message of the exception.
-          ReturnXmlException e = new ReturnXmlException();
-          e.setCleanMessage(xml);
-          throw e;
-        }
+        InputStream responseStream = readResponseStream(response);
 
         EwsServiceXmlReader ewsXmlReader = new EwsServiceXmlReader(
             responseStream, this.getService());
@@ -467,8 +479,6 @@ public abstract class ServiceRequestBase<T> {
       }
 
       return serviceResponse;
-    } catch (ReturnXmlException e) {
-      throw e;
     } catch (HTTPException e) {
       if (e.getMessage() != null) {
         this.getService().processHttpResponseHeaders(

@@ -169,6 +169,16 @@ public abstract class MultiResponseServiceRequest<TResponse extends ServiceRespo
   }
 
   /**
+   * Return the raw response for this request.
+   *
+   * @return Service response collection.
+   * @throws Exception the exception
+   */
+  public String raw() throws Exception {
+    return internalRaw();
+  }
+
+  /**
    * Ends executing this async request.
    *
    * @param asyncResult The async result

@@ -398,8 +398,7 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
     List<FolderId> folderIdArray = new ArrayList<FolderId>();
     folderIdArray.add(parentFolderId);
     ServiceResponseCollection<FindFolderResponse> responses = this
-        .internalFindFolders(folderIdArray, searchFilter, view,
-            ServiceErrorHandling.ThrowOnError);
+        .internalFindFolders(folderIdArray, searchFilter, view, ServiceErrorHandling.ThrowOnError);
 
     return responses.getResponseAtIndex(0).getResults();
   }
@@ -652,8 +651,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
       SendInvitationsMode sendInvitationsMode) throws Exception {
     ArrayList<Item> items = new ArrayList<Item>();
     items.add(item);
-    internalCreateItems(items, parentFolderId, messageDisposition,
-        sendInvitationsMode, ServiceErrorHandling.ThrowOnError);
+    internalCreateItems(items, parentFolderId, messageDisposition, sendInvitationsMode,
+                        ServiceErrorHandling.ThrowOnError);
   }
 
   /**
@@ -840,8 +839,7 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
   public ServiceResponseCollection<MoveCopyItemResponse> copyItems(
       Iterable<ItemId> itemIds, FolderId destinationFolderId,
       boolean returnNewItemIds) throws Exception {
-    EwsUtilities.validateMethodVersion(this,
-        ExchangeVersion.Exchange2010_SP1, "CopyItems");
+    EwsUtilities.validateMethodVersion(this, ExchangeVersion.Exchange2010_SP1, "CopyItems");
 
     return this.internalCopyItems(itemIds, destinationFolderId, returnNewItemIds,
                                   ServiceErrorHandling.ReturnErrors);
@@ -920,8 +918,7 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
   public ServiceResponseCollection<MoveCopyItemResponse> moveItems(
       Iterable<ItemId> itemIds, FolderId destinationFolderId,
       boolean returnNewItemIds) throws Exception {
-    EwsUtilities.validateMethodVersion(this,
-        ExchangeVersion.Exchange2010_SP1, "MoveItems");
+    EwsUtilities.validateMethodVersion(this, ExchangeVersion.Exchange2010_SP1, "MoveItems");
 
     return this.internalMoveItems(itemIds, destinationFolderId, returnNewItemIds,
                                   ServiceErrorHandling.ReturnErrors);
@@ -1220,8 +1217,7 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
       WellKnownFolderName parentFolderName, String queryString,
       ItemView view, Grouping groupBy) throws Exception {
     EwsUtilities.validateParam(groupBy, "groupBy");
-    return this.findItems(new FolderId(parentFolderName), queryString,
-        view, groupBy);
+    return this.findItems(new FolderId(parentFolderName), queryString, view, groupBy);
   }
 
   /**
@@ -1322,6 +1318,24 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
   }
 
   /**
+   * Generates a request for the given items.
+   *
+   * @param itemIds       the item ids
+   * @param propertySet   the property set
+   * @param errorHandling the error handling
+   * @return A ServiceResponseCollection providing results for each of the
+   * specified item Ids.
+   * @throws Exception the exception
+   */
+  private GetItemRequest generateItemRequest(
+      Iterable<ItemId> itemIds, PropertySet propertySet,
+      ServiceErrorHandling errorHandling) throws Exception {
+    GetItemRequest request = new GetItemRequest(this, errorHandling);
+    request.getItemIds().addRange(itemIds);
+    request.setPropertySet(propertySet);
+    return request;
+  }
+  /**
    * Binds to multiple item in a single call to EWS.
    *
    * @param itemIds       the item ids
@@ -1334,21 +1348,55 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
   private ServiceResponseCollection<GetItemResponse> internalBindToItems(
       Iterable<ItemId> itemIds, PropertySet propertySet,
       ServiceErrorHandling errorHandling) throws Exception {
-    GetItemRequest request = new GetItemRequest(this, errorHandling);
-    boolean oldHijack = request.hijackResponse;
-    request.hijackResponse = hijackResponse;
-    request.getItemIds().addRange(itemIds);
-    request.setPropertySet(propertySet);
-    ServiceResponseCollection<GetItemResponse> temp;
-    try {
-       temp = request.execute();
-    } catch (ReturnXmlException e) {
-      request.hijackResponse = oldHijack;
-      throw e;
-    }
+    GetItemRequest request = generateItemRequest(
+        itemIds, propertySet, errorHandling
+    );
+    return request.execute();
+  }
 
-    request.hijackResponse = oldHijack;
-    return temp;
+  /**
+   * Return the xml generated when requesting items from EWS.
+   *
+   * @param itemIds     the item ids
+   * @param propertySet the property set
+   * @param errorHandling the error handling
+   * @return A string of xml that is the raw server response
+   * @throws Exception the exception
+   */
+  private String internalXmlResponseForItems(
+      Iterable<ItemId> itemIds, PropertySet propertySet,
+      ServiceErrorHandling errorHandling) throws Exception {
+      GetItemRequest request = generateItemRequest(
+          itemIds, propertySet, errorHandling
+      );
+    return request.raw();
+  }
+
+  /**
+   * Validate parameters passed to functions dealing with items.
+   *
+   * @param itemIds     the item ids
+   * @param propertySet the property set
+   * @throws Exception the exception
+   */
+  private void validateParamsForItems(
+      Iterable<ItemId> itemIds, PropertySet propertySet) throws Exception {
+    EwsUtilities.validateParamCollection(itemIds.iterator(), "itemIds");
+    EwsUtilities.validateParam(propertySet, "propertySet");
+  }
+
+    /**
+     * Return the xml generated when requesting items from EWS.
+     *
+     * @param itemIds     the item ids
+     * @param propertySet the property set
+     * @return A string of xml that is the raw server response
+     * @throws Exception the exception
+     */
+  public String xmlResponseForItems(
+      Iterable<ItemId> itemIds, PropertySet propertySet) throws Exception {
+    validateParamsForItems(itemIds, propertySet);
+    return this.internalXmlResponseForItems(itemIds, propertySet, ServiceErrorHandling.ReturnErrors);
   }
 
   /**
@@ -1362,9 +1410,7 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
    */
   public ServiceResponseCollection<GetItemResponse> bindToItems(
       Iterable<ItemId> itemIds, PropertySet propertySet) throws Exception {
-    EwsUtilities.validateParamCollection(itemIds.iterator(), "itemIds");
-    EwsUtilities.validateParam(propertySet, "propertySet");
-
+    validateParamsForItems(itemIds, propertySet);
     return this.internalBindToItems(itemIds, propertySet,
         ServiceErrorHandling.ReturnErrors);
   }

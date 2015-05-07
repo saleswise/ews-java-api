@@ -36,6 +36,7 @@ import microsoft.exchange.webservices.data.exception.ServiceRequestException;
 import microsoft.exchange.webservices.data.interfaces.IAsyncResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.util.concurrent.Callable;
@@ -57,6 +58,34 @@ public abstract class SimpleServiceRequestBase<T> extends ServiceRequestBase<T> 
   }
 
   /**
+   * Gets the raw response for this request.
+   *
+   * @throws Exception
+   * @throws microsoft.exchange.webservices.data.exception.ServiceLocalException
+   */
+  protected String internalRaw() throws ServiceLocalException, Exception {
+    HttpWebRequest response = null;
+
+    try {
+      response = this.validateAndEmitRequest();
+      InputStream responseStream =  this.readResponseStream(response);
+      String encoding = null;
+      return IOUtils.toString(responseStream, encoding);
+    } catch (IOException ex) {
+      // Wrap exception.
+      throw new ServiceRequestException(String.
+          format("The request failed. %s", ex.getMessage()), ex);
+    } catch (Exception e) {
+      if (response != null) {
+        this.getService().processHttpResponseHeaders(TraceFlags.
+                                                         EwsResponseHttpHeaders, response);
+      }
+
+      throw new ServiceRequestException(String.format("The request failed. %s", e.getMessage()), e);
+    }
+  }
+
+  /**
    * Executes this request.
    *
    * @throws Exception
@@ -68,8 +97,6 @@ public abstract class SimpleServiceRequestBase<T> extends ServiceRequestBase<T> 
     try {
       response = this.validateAndEmitRequest();
       return this.readResponse(response);
-    } catch (ReturnXmlException e) {
-      throw e;
     } catch (IOException ex) {
       // Wrap exception.
       throw new ServiceRequestException(String.
