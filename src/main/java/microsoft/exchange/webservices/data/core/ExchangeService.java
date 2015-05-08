@@ -842,7 +842,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
   public ServiceResponseCollection<MoveCopyItemResponse> copyItems(
       Iterable<ItemId> itemIds, FolderId destinationFolderId,
       boolean returnNewItemIds) throws Exception {
-    EwsUtilities.validateMethodVersion(this, ExchangeVersion.Exchange2010_SP1, "CopyItems");
+    EwsUtilities.validateMethodVersion(this,
+        ExchangeVersion.Exchange2010_SP1, "CopyItems");
 
     return this.internalCopyItems(itemIds, destinationFolderId,
         returnNewItemIds, ServiceErrorHandling.ReturnErrors);
@@ -1101,8 +1102,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
   public FindItemsResults<Item> findItems(
       WellKnownFolderName parentFolderName, ItemView view)
       throws Exception {
-    return this.findItems(new FolderId(parentFolderName), (SearchFilter) null,
-        view);
+    return this.findItems(new FolderId(parentFolderName),
+        (SearchFilter) null, view);
   }
 
   /**
@@ -1205,7 +1206,7 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
     folderIdArray.add(parentFolderId);
 
     return this.findItems(folderIdArray, searchFilter, null, /* queryString */
-                          view, groupBy, ServiceErrorHandling.ThrowOnError);
+        view, groupBy, ServiceErrorHandling.ThrowOnError);
   }
 
   /**
@@ -1224,7 +1225,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
       WellKnownFolderName parentFolderName, String queryString,
       ItemView view, Grouping groupBy) throws Exception {
     EwsUtilities.validateParam(groupBy, "groupBy");
-    return this.findItems(new FolderId(parentFolderName), queryString, view, groupBy);
+    return this.findItems(new FolderId(parentFolderName), queryString,
+        view, groupBy);
   }
 
   /**
@@ -1242,7 +1244,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
   public GroupedFindItemsResults<Item> findItems(
       WellKnownFolderName parentFolderName, SearchFilter searchFilter,
       ItemView view, Grouping groupBy) throws Exception {
-    return this.findItems(new FolderId(parentFolderName), searchFilter, view, groupBy);
+    return this.findItems(new FolderId(parentFolderName), searchFilter,
+        view, groupBy);
   }
 
   /**
@@ -1282,7 +1285,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
   public FindItemsResults<Appointment> findAppointments(
       WellKnownFolderName parentFolderName, CalendarView calendarView)
       throws Exception {
-    return this.findAppointments(new FolderId(parentFolderName), calendarView);
+    return this.findAppointments(new FolderId(parentFolderName),
+        calendarView);
   }
 
   /**
@@ -1299,7 +1303,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
     EwsUtilities.validateParamCollection(items.iterator(), "item");
     EwsUtilities.validateParam(propertySet, "propertySet");
 
-    return this.internalLoadPropertiesForItems(items, propertySet, ServiceErrorHandling.ReturnErrors);
+    return this.internalLoadPropertiesForItems(items, propertySet,
+        ServiceErrorHandling.ReturnErrors);
   }
 
   /**
