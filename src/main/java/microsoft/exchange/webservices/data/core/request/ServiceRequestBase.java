@@ -61,8 +61,6 @@ import java.util.zip.InflaterInputStream;
  */
 public abstract class ServiceRequestBase<T> {
 
-  public boolean hijackResponse = false;
-
   private static final Log LOG = LogFactory.getLog(ServiceRequestBase.class);
 
   // Private Constants
@@ -422,8 +420,7 @@ public abstract class ServiceRequestBase<T> {
       return ServiceRequestBase.getResponseStream(response);
     } catch (HTTPException e) {
       if (e.getMessage() != null) {
-        this.getService().processHttpResponseHeaders(
-            TraceFlags.EwsResponseHttpHeaders, response);
+        this.getService().processHttpResponseHeaders(TraceFlags.EwsResponseHttpHeaders, response);
       }
       throw new ServiceRequestException(String.format("The request failed. %s", e.getMessage()), e);
     } catch (IOException e) {
@@ -459,13 +456,15 @@ public abstract class ServiceRequestBase<T> {
 
         int data = serviceResponseStream.read();
         while (data != -1) {
-          memoryStream.write(data);
-          data = serviceResponseStream.read();
+            memoryStream.write(data);
+            data = serviceResponseStream.read();
         }
 
         this.traceResponse(response, memoryStream);
-        ByteArrayInputStream memoryStreamIn = new ByteArrayInputStream(memoryStream.toByteArray());
-        EwsServiceXmlReader ewsXmlReader = new EwsServiceXmlReader(memoryStreamIn, this.getService());
+        ByteArrayInputStream memoryStreamIn = new ByteArrayInputStream(
+            memoryStream.toByteArray());
+        EwsServiceXmlReader ewsXmlReader = new EwsServiceXmlReader(
+            memoryStreamIn, this.getService());
         serviceResponse = this.readResponse(ewsXmlReader);
         serviceResponseStream.close();
         memoryStream.flush();

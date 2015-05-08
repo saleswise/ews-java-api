@@ -396,7 +396,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
     List<FolderId> folderIdArray = new ArrayList<FolderId>();
     folderIdArray.add(parentFolderId);
     ServiceResponseCollection<FindFolderResponse> responses = this
-        .internalFindFolders(folderIdArray, searchFilter, view, ServiceErrorHandling.ThrowOnError);
+        .internalFindFolders(folderIdArray, searchFilter, view,
+            ServiceErrorHandling.ThrowOnError);
 
     return responses.getResponseAtIndex(0).getResults();
   }
@@ -439,7 +440,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
    */
   public FindFoldersResults findFolders(WellKnownFolderName parentFolderName,
       SearchFilter searchFilter, FolderView view) throws Exception {
-    return this.findFolders(new FolderId(parentFolderName), searchFilter, view);
+    return this.findFolders(new FolderId(parentFolderName), searchFilter,
+        view);
   }
 
   /**
@@ -632,8 +634,9 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
     })) {
       throw new ServiceValidationException("This operation doesn't support item that have attachments.");
     }
-    return this.internalCreateItems(items, parentFolderId, messageDisposition, sendInvitationsMode,
-                                    ServiceErrorHandling.ReturnErrors);
+    return this.internalCreateItems(items, parentFolderId,
+        messageDisposition, sendInvitationsMode,
+        ServiceErrorHandling.ReturnErrors);
   }
 
   /**
@@ -650,7 +653,7 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
     ArrayList<Item> items = new ArrayList<Item>();
     items.add(item);
     internalCreateItems(items, parentFolderId, messageDisposition, sendInvitationsMode,
-                        ServiceErrorHandling.ThrowOnError);
+        ServiceErrorHandling.ThrowOnError);
   }
 
   /**
@@ -730,9 +733,10 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
           "This operation can't be performed because attachments have been added or deleted for one or more item.");
     }
 
-    return this.internalUpdateItems(items, savedItemsDestinationFolderId, conflictResolution,
-                                    messageDisposition, sendInvitationsOrCancellationsMode,
-                                    ServiceErrorHandling.ReturnErrors);
+    return this.internalUpdateItems(items, savedItemsDestinationFolderId,
+        conflictResolution, messageDisposition,
+        sendInvitationsOrCancellationsMode,
+        ServiceErrorHandling.ReturnErrors);
   }
 
   /**
@@ -1333,6 +1337,7 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
     request.setPropertySet(propertySet);
     return request;
   }
+
   /**
    * Binds to multiple item in a single call to EWS.
    *
