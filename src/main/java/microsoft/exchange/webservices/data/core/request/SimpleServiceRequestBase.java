@@ -23,7 +23,6 @@
 
 package microsoft.exchange.webservices.data.core.request;
 
-import microsoft.exchange.webservices.data.exception.ReturnXmlException;
 import microsoft.exchange.webservices.data.misc.AsyncCallback;
 import microsoft.exchange.webservices.data.misc.AsyncExecutor;
 import microsoft.exchange.webservices.data.misc.AsyncRequestResult;

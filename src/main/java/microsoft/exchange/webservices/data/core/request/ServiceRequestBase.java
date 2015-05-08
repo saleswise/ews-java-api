@@ -46,7 +46,6 @@ import microsoft.exchange.webservices.data.exception.ServiceVersionException;
 import microsoft.exchange.webservices.data.exception.ServiceXmlDeserializationException;
 import microsoft.exchange.webservices.data.exception.ServiceXmlSerializationException;
 import microsoft.exchange.webservices.data.exception.XmlException;
-import microsoft.exchange.webservices.data.exception.ReturnXmlException;
 import microsoft.exchange.webservices.data.misc.SoapFaultDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
