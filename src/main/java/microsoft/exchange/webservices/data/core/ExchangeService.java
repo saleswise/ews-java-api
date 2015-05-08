@@ -203,7 +203,6 @@ import java.util.TimeZone;
  */
 public class ExchangeService extends ExchangeServiceBase implements IAutodiscoverRedirectionUrl {
 
-  public boolean hijackResponse = false;
   private static final Log LOG = LogFactory.getLog(ExchangeService.class);
 
   /**
