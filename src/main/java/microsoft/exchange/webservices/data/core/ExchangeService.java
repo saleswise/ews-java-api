@@ -652,8 +652,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
       SendInvitationsMode sendInvitationsMode) throws Exception {
     ArrayList<Item> items = new ArrayList<Item>();
     items.add(item);
-    internalCreateItems(items, parentFolderId, messageDisposition, sendInvitationsMode,
-        ServiceErrorHandling.ThrowOnError);
+    internalCreateItems(items, parentFolderId, messageDisposition,
+        sendInvitationsMode, ServiceErrorHandling.ThrowOnError);
   }
 
   /**
@@ -824,7 +824,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
   public ServiceResponseCollection<MoveCopyItemResponse> copyItems(
       Iterable<ItemId> itemIds, FolderId destinationFolderId)
       throws Exception {
-    return this.internalCopyItems(itemIds, destinationFolderId, null, ServiceErrorHandling.ReturnErrors);
+    return this.internalCopyItems(itemIds, destinationFolderId, null,
+        ServiceErrorHandling.ReturnErrors);
   }
 
   /**
@@ -843,8 +844,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
       boolean returnNewItemIds) throws Exception {
     EwsUtilities.validateMethodVersion(this, ExchangeVersion.Exchange2010_SP1, "CopyItems");
 
-    return this.internalCopyItems(itemIds, destinationFolderId, returnNewItemIds,
-                                  ServiceErrorHandling.ReturnErrors);
+    return this.internalCopyItems(itemIds, destinationFolderId,
+        returnNewItemIds, ServiceErrorHandling.ReturnErrors);
   }
 
   /**
@@ -903,7 +904,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
   public ServiceResponseCollection<MoveCopyItemResponse> moveItems(
       Iterable<ItemId> itemIds, FolderId destinationFolderId)
       throws Exception {
-    return this.internalMoveItems(itemIds, destinationFolderId, null, ServiceErrorHandling.ReturnErrors);
+    return this.internalMoveItems(itemIds, destinationFolderId, null,
+        ServiceErrorHandling.ReturnErrors);
   }
 
   /**
@@ -920,10 +922,11 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
   public ServiceResponseCollection<MoveCopyItemResponse> moveItems(
       Iterable<ItemId> itemIds, FolderId destinationFolderId,
       boolean returnNewItemIds) throws Exception {
-    EwsUtilities.validateMethodVersion(this, ExchangeVersion.Exchange2010_SP1, "MoveItems");
+    EwsUtilities.validateMethodVersion(this,
+        ExchangeVersion.Exchange2010_SP1, "MoveItems");
 
-    return this.internalMoveItems(itemIds, destinationFolderId, returnNewItemIds,
-                                  ServiceErrorHandling.ReturnErrors);
+    return this.internalMoveItems(itemIds, destinationFolderId,
+        returnNewItemIds, ServiceErrorHandling.ReturnErrors);
   }
 
   /**
@@ -1082,7 +1085,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
   public FindItemsResults<Item> findItems(
       WellKnownFolderName parentFolderName, SearchFilter searchFilter,
       ItemView view) throws Exception {
-    return this.findItems(new FolderId(parentFolderName), searchFilter, view);
+    return this.findItems(new FolderId(parentFolderName), searchFilter,
+        view);
   }
 
   /**
@@ -1097,7 +1101,8 @@ public class ExchangeService extends ExchangeServiceBase implements IAutodiscove
   public FindItemsResults<Item> findItems(
       WellKnownFolderName parentFolderName, ItemView view)
       throws Exception {
-    return this.findItems(new FolderId(parentFolderName), (SearchFilter) null, view);
+    return this.findItems(new FolderId(parentFolderName), (SearchFilter) null,
+        view);
   }
 
   /**
