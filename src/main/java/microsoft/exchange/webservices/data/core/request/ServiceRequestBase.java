@@ -402,9 +402,8 @@ public abstract class ServiceRequestBase<T> {
    * @throws Exception
    */
   protected InputStream readResponseStream(HttpWebRequest response) throws Exception {
-    T serviceResponse;
-
     if (!response.getResponseContentType().startsWith("text/xml")) {
+      // We copied this from similar code upstream. It may serve as validation via side effects.
       String line = new BufferedReader(new InputStreamReader(ServiceRequestBase.getResponseStream(response)))
           .readLine();
       throw new ServiceRequestException("The response received from the service didn't contain valid XML.");
@@ -416,6 +415,8 @@ public abstract class ServiceRequestBase<T> {
      * we parse the response from the MemoryStream.
      */
     try {
+      // Believe we need to call this before getting the response stream. It seems to serve as removing the
+      // HTTP header from the xml response before we return it.
       this.getService().processHttpResponseHeaders(TraceFlags.EwsResponseHttpHeaders, response);
       return ServiceRequestBase.getResponseStream(response);
     } catch (HTTPException e) {
@@ -477,6 +478,8 @@ public abstract class ServiceRequestBase<T> {
       }
 
       return serviceResponse;
+
+    // Make sure to reflect any upstream changes to the exception handling in readRawResponse.
     } catch (HTTPException e) {
       if (e.getMessage() != null) {
         this.getService().processHttpResponseHeaders(
