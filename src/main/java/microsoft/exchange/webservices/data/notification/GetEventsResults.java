@@ -201,7 +201,7 @@ public final class GetEventsResults {
    *
    * @return the new watermark
    */
-  protected String getNewWatermark() {
+  public String getNewWatermark() {
     return newWatermark;
   }
 
