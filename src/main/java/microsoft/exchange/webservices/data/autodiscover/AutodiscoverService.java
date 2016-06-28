@@ -605,7 +605,7 @@ public class AutodiscoverService extends ExchangeServiceBase
                               settings
                                   .getRedirectTarget()));
 
-              urls.add(currentUrlIndex, new URI(
+              urls.set(currentUrlIndex, new URI(
                   settings.getRedirectTarget()));
 
               break;
